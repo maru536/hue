@@ -26,7 +26,7 @@ from odf.element import IllegalChild
 from odf.namespaces import TEXTNS
 from elementparser import ElementParser
 
-class TestMasterStyles(unittest.TestCase):
+class TestMainStyles(unittest.TestCase):
 
     def assertContains(self, stack, needle):
         self.assertNotEqual(-1, stack.find(needle))
@@ -45,13 +45,13 @@ class TestMasterStyles(unittest.TestCase):
         presdoc.automaticstyles.addElement(pagelayout)
         pagelayout.addElement(style.PageLayoutProperties(margin="0cm", pagewidth="28cm", pageheight="21cm", printorientation="landscape"))
 
-        # Every drawing page must have a master page assigned to it.
-        masterpage = style.MasterPage(name="MyMaster", pagelayoutname=pagelayout)
-        presdoc.masterstyles.addElement(masterpage)
+        # Every drawing page must have a main page assigned to it.
+        mainpage = style.MainPage(name="MyMain", pagelayoutname=pagelayout)
+        presdoc.mainstyles.addElement(mainpage)
 
         # Style for the title frame of the page
         # We set a centered 34pt font with yellowish background
-        titlestyle = style.Style(name="MyMaster-title", family="presentation")
+        titlestyle = style.Style(name="MyMain-title", family="presentation")
         titlestyle.addElement(style.ParagraphProperties(textalign="center"))
         titlestyle.addElement(style.TextProperties(fontsize="34pt"))
         titlestyle.addElement(style.GraphicProperties(fillcolor="#ffff99"))
@@ -67,26 +67,26 @@ class TestMasterStyles(unittest.TestCase):
         self.assertTrue(e.has_value("style:print-orientation","landscape"))
 
         e = ElementParser(s,'style:style')
-        self.assertTrue(e.has_value("style:name","MyMaster-title"))
-        self.assertTrue(e.has_value("style:display-name","MyMaster-title"))
+        self.assertTrue(e.has_value("style:name","MyMain-title"))
+        self.assertTrue(e.has_value("style:display-name","MyMain-title"))
         self.assertTrue(e.has_value("style:family","presentation"))
 
         self.assertContains(s, '<style:paragraph-properties fo:text-align="center"/><style:text-properties fo:font-size="34pt"/><style:graphic-properties draw:fill-color="#ffff99"/></style:style></office:styles>')
-        e = ElementParser(s,'style:master-page')
-        self.assertTrue(e.has_value("style:name","MyMaster"))
-        self.assertTrue(e.has_value("style:display-name","MyMaster"))
+        e = ElementParser(s,'style:main-page')
+        self.assertTrue(e.has_value("style:name","MyMain"))
+        self.assertTrue(e.has_value("style:display-name","MyMain"))
         self.assertTrue(e.has_value("style:page-layout-name","MyLayout"))
 
-    def testMasterWithHeader(self):
+    def testMainWithHeader(self):
         """ Create a text document with a page layout called "pagelayout"
-            Add a master page
+            Add a main page
             Check that pagelayout is listed in styles.xml
         """
         textdoc = OpenDocumentText()
         pl = style.PageLayout(name="pagelayout")
         textdoc.automaticstyles.addElement(pl)
-        mp = style.MasterPage(name="Standard", pagelayoutname=pl)
-        textdoc.masterstyles.addElement(mp)
+        mp = style.MainPage(name="Standard", pagelayoutname=pl)
+        textdoc.mainstyles.addElement(mp)
         h = style.Header()
         hp = text.P(text="header try")
         h.addElement(hp)
@@ -96,7 +96,7 @@ class TestMasterStyles(unittest.TestCase):
 
     def testAutomaticStyles(self):
         """ Create a text document with a page layout called "pagelayout"
-            Add a master page
+            Add a main page
             Add an automatic style for the heading
             Check that pagelayout is listed in styles.xml under automatic-styles
             Check that the heading style is NOT listed in styles.xml
@@ -117,8 +117,8 @@ class TestMasterStyles(unittest.TestCase):
         pl = style.PageLayout(name="pagelayout")
         textdoc.automaticstyles.addElement(pl)
 
-        mp = style.MasterPage(name="Standard", pagelayoutname=pl)
-        textdoc.masterstyles.addElement(mp)
+        mp = style.MainPage(name="Standard", pagelayoutname=pl)
+        textdoc.mainstyles.addElement(mp)
         h = style.Header()
         hp = text.P(text="header content", stylename=hpstyle)
         h.addElement(hp)

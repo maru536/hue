@@ -42,27 +42,27 @@ class TestPresentations(unittest.TestCase):
         presdoc.automaticstyles.addElement(pagelayout)
         pagelayout.addElement(style.PageLayoutProperties(margin="0cm", pagewidth="28cm", pageheight="21cm", printorientation="landscape"))
 
-        # Every drawing page must have a master page assigned to it.
-        masterpage = style.MasterPage(name="MyMaster", pagelayoutname=pagelayout)
-        presdoc.masterstyles.addElement(masterpage)
+        # Every drawing page must have a main page assigned to it.
+        mainpage = style.MainPage(name="MyMain", pagelayoutname=pagelayout)
+        presdoc.mainstyles.addElement(mainpage)
 
         # Style for the title frame of the page
         # We set a centered 34pt font with yellowish background
-        titlestyle = style.Style(name="MyMaster-title", family="presentation")
+        titlestyle = style.Style(name="MyMain-title", family="presentation")
         titlestyle.addElement(style.ParagraphProperties(textalign="center"))
         titlestyle.addElement(style.TextProperties(fontsize="34pt"))
         titlestyle.addElement(style.GraphicProperties(fillcolor="#ffff99"))
         presdoc.styles.addElement(titlestyle)
 
         # Style for the photo frame
-        mainstyle = style.Style(name="MyMaster-main", family="presentation")
+        mainstyle = style.Style(name="MyMain-main", family="presentation")
         presdoc.styles.addElement(mainstyle)
 
         # Create style for drawing page
         dpstyle = style.Style(name="dp1", family="drawing-page")
         presdoc.automaticstyles.addElement(dpstyle)
 
-        page = draw.Page(stylename=dpstyle, masterpagename=masterpage)
+        page = draw.Page(stylename=dpstyle, mainpagename=mainpage)
         presdoc.presentation.addElement(page)
 
         titleframe = draw.Frame(stylename=titlestyle, width="720pt", height="56pt", x="40pt", y="10pt")

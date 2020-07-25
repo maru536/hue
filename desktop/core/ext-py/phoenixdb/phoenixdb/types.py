@@ -168,7 +168,7 @@ FIELD_MAP = {
         (common_pb2.PRIMITIVE_DOUBLE, float, float)
     ]
 }
-"""The master map that describes how to handle types, keyed by TypedData field"""
+"""The main map that describes how to handle types, keyed by TypedData field"""
 
 REP_MAP = dict((v[0], (k, v[0], v[1], v[2])) for k in FIELD_MAP for v in FIELD_MAP[k])
 """Flips the available types to allow for faster lookup by protobuf Rep

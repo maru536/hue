@@ -30,7 +30,7 @@ Content-Disposition: form-data; name="type"
 
 NATIVE
 -----------------------------320761477111544
-Content-Disposition: form-data; name="master"
+Content-Disposition: form-data; name="main"
 
 
 -----------------------------320761477111544
@@ -86,9 +86,9 @@ Content-Disposition: form-data; name="foobar_manager_record_domain-0-primary"
 
 ns.example.org
 -----------------------------320761477111544
-Content-Disposition: form-data; name="foobar_manager_record_domain-0-hostmaster"
+Content-Disposition: form-data; name="foobar_manager_record_domain-0-hostmain"
 
-hostmaster.test.example.org
+hostmain.test.example.org
 -----------------------------320761477111544
 Content-Disposition: form-data; name="foobar_manager_record_domain-0-serial"
 
@@ -126,7 +126,7 @@ Content-Disposition: form-data; name="foobar_manager_record_domain-__prefix__-pr
 
 
 -----------------------------320761477111544
-Content-Disposition: form-data; name="foobar_manager_record_domain-__prefix__-hostmaster"
+Content-Disposition: form-data; name="foobar_manager_record_domain-__prefix__-hostmain"
 
 
 -----------------------------320761477111544

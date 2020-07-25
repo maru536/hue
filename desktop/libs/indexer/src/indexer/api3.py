@@ -626,7 +626,7 @@ def _envelope_job(request, file_format, destination, start_time=None, lib_path=N
     if destination['tableFormat'] == 'kudu':
       manager = ManagerApi()
       properties["output_table"] = "impala::%s" % collection_name
-      properties["kudu_master"] = manager.get_kudu_master()
+      properties["kudu_main"] = manager.get_kudu_main()
     else:
       properties['output_table'] = collection_name
   elif destination['outputFormat'] == 'stream':

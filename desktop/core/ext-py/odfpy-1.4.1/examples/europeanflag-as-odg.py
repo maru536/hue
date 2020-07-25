@@ -28,7 +28,7 @@
 # LOGO language does.
 import math
 from odf.opendocument import OpenDocumentDrawing
-from odf.style import Style, MasterPage, PageLayout, PageLayoutProperties, \
+from odf.style import Style, MainPage, PageLayout, PageLayoutProperties, \
    GraphicProperties, DrawingPageProperties
 from odf.draw import Page, G, Polygon, Rect
 
@@ -98,12 +98,12 @@ plstyle = PageLayout(name="PM1")
 plstyle.addElement(PageLayoutProperties(margin="0cm", pageheight="120mm", pagewidth="180mm", printorientation="portrait"))
 doc.automaticstyles.addElement(plstyle)
 
-# Create a master page
-masterpage = MasterPage(stylename=dpstyle, name="Default", pagelayoutname=plstyle)
-doc.masterstyles.addElement(masterpage)
+# Create a main page
+mainpage = MainPage(stylename=dpstyle, name="Default", pagelayoutname=plstyle)
+doc.mainstyles.addElement(mainpage)
 
 # Create a page to contain the drawing
-drawpage = Page(masterpagename=masterpage, name="page1", stylename=dpstyle)
+drawpage = Page(mainpagename=mainpage, name="page1", stylename=dpstyle)
 doc.drawing.addElement(drawpage)
 
 group=G()

@@ -199,17 +199,17 @@ class ManagerApi(object):
       raise ManagerApiException(e)
 
 
-  def get_kudu_master(self, cluster_name=None):
+  def get_kudu_main(self, cluster_name=None):
     try:
       cluster = self._get_cluster(cluster_name)
       services = self._root.get('clusters/%(name)s/services' % cluster)['items']
 
       service = [service for service in services if service['type'] == 'KUDU'][0]
-      master = self._get_roles(cluster['name'], service['name'], 'KUDU_MASTER')[0]
+      main = self._get_roles(cluster['name'], service['name'], 'KUDU_MASTER')[0]
 
-      master_host = self._root.get('hosts/%(hostId)s' % master['hostRef'])
+      main_host = self._root.get('hosts/%(hostId)s' % main['hostRef'])
 
-      return master_host['hostname']
+      return main_host['hostname']
     except RestException as e:
       raise ManagerApiException(e)
 

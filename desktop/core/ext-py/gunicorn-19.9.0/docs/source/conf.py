@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.join(DOCS_DIR, os.pardir, os.pardir))
 extensions = ['gunicorn_ext']
 templates_path = ['_templates']
 source_suffix = '.rst'
-master_doc = 'index'
+main_doc = 'index'
 
 # General information about the project.
 project = u'Gunicorn'

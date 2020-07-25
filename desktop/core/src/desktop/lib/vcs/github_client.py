@@ -152,7 +152,7 @@ class GithubClient(object):
     """
     Given a base URL to a Github repository, return a tuple of the owner, repo, branch, and filepath
     :param url: base URL to repo (e.g. - https://github.com/cloudera/hue/blob/master/README.rst)
-    :return: tuple of strings (e.g. - ('cloudera', 'hue', 'master', 'README.rst'))
+    :return: tuple of strings (e.g. - ('cloudera', 'hue', 'main', 'README.rst'))
     """
     match = self.github_url_regex.search(url)
     if match:
@@ -161,7 +161,7 @@ class GithubClient(object):
       raise ValueError('GitHub URL is not formatted correctly: %s' % url)
 
 
-  def get_file_contents(self, owner, repo, filepath, branch='master'):
+  def get_file_contents(self, owner, repo, filepath, branch='main'):
     filepath = self._clean_path(filepath)
     try:
       sha = self.get_sha(owner, repo, filepath, branch)
@@ -174,7 +174,7 @@ class GithubClient(object):
       raise GithubClientException('Failed to find expected content object in blob object: %s' % e)
 
 
-  def get_sha(self, owner, repo, filepath, branch='master'):
+  def get_sha(self, owner, repo, filepath, branch='main'):
     """
     Return the sha for a given filepath by recursively calling Trees API for each level of the path
     """
@@ -194,7 +194,7 @@ class GithubClient(object):
     return sha
 
 
-  def get_tree(self, owner, repo, sha='master', recursive=True):
+  def get_tree(self, owner, repo, sha='main', recursive=True):
     """
     GET /repos/:owner/:repo/git/trees/:sha
     https://developer.github.com/v3/git/trees/#get-a-tree

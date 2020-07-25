@@ -126,13 +126,13 @@ class MultiProcessFile(object):
     def __init__(self):
         # per advice at:
         #    http://docs.python.org/library/multiprocessing.html#all-platforms
-        self.__master = getpid()
+        self.__main = getpid()
         self.__queue = Manager().Queue()
         self.__buffer = StringIO()
         self.softspace = 0
 
     def buffer(self):
-        if getpid() != self.__master:
+        if getpid() != self.__main:
             return
 
         from Queue import Empty

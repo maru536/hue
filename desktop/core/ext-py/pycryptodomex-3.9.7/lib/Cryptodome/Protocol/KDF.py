@@ -272,12 +272,12 @@ class _S2V(object):
         return mac.digest()
 
 
-def HKDF(master, key_len, salt, hashmod, num_keys=1, context=None):
-    """Derive one or more keys from a master secret using
+def HKDF(main, key_len, salt, hashmod, num_keys=1, context=None):
+    """Derive one or more keys from a main secret using
     the HMAC-based KDF defined in RFC5869_.
 
     Args:
-     master (byte string):
+     main (byte string):
         The unguessable value used by the KDF to generate the other keys.
         It must be a high-entropy secret, though not necessarily uniform.
         It must not be a password.
@@ -313,7 +313,7 @@ def HKDF(master, key_len, salt, hashmod, num_keys=1, context=None):
         context = b""
 
     # Step 1: extract
-    hmac = HMAC.new(salt, master, digestmod=hashmod)
+    hmac = HMAC.new(salt, main, digestmod=hashmod)
     prk = hmac.digest()
 
     # Step 2: expand

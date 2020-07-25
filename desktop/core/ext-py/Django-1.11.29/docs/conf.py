@@ -75,8 +75,8 @@ source_suffix = '.txt'
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
 
-# The master toctree document.
-master_doc = 'contents'
+# The main toctree document.
+main_doc = 'contents'
 
 # General substitutions.
 project = 'Django'
@@ -303,7 +303,7 @@ man_pages = [(
 # List of tuples (startdocname, targetname, title, author, dir_entry,
 # description, category, toctree_only)
 texinfo_documents = [(
-    master_doc, "django", "", "", "Django",
+    main_doc, "django", "", "", "Django",
     "Documentation of the Django framework", "Web development", False
 )]
 

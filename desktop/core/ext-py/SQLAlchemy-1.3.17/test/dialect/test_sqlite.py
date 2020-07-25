@@ -874,7 +874,7 @@ class AttachedDBTest(fixtures.TestBase):
         eq_(insp.get_schema_names(), ["main", "test_schema"])
 
         # implicitly creates a "temp" schema
-        self.conn.execute("select * from sqlite_temp_master")
+        self.conn.execute("select * from sqlite_temp_main")
 
         # we're not including it
         insp = inspect(self.conn)
@@ -882,14 +882,14 @@ class AttachedDBTest(fixtures.TestBase):
 
     def test_reflect_system_table(self):
         meta = MetaData(self.conn)
-        alt_master = Table(
-            "sqlite_master",
+        alt_main = Table(
+            "sqlite_main",
             meta,
             autoload=True,
             autoload_with=self.conn,
             schema="test_schema",
         )
-        assert len(alt_master.c) > 0
+        assert len(alt_main.c) > 0
 
     def test_reflect_user_table(self):
         self._fixture()
@@ -977,33 +977,33 @@ class SQLTest(fixtures.TestBase, AssertsCompiledSQL):
             "t1",
             metadata,
             Column("id", Integer, primary_key=True),
-            schema="master",
+            schema="main",
         )
         t2 = Table(
             "t2",
             metadata,
             Column("id", Integer, primary_key=True),
-            Column("t1_id", Integer, ForeignKey("master.t1.id")),
-            schema="master",
+            Column("t1_id", Integer, ForeignKey("main.t1.id")),
+            schema="main",
         )
         t3 = Table(
             "t3",
             metadata,
             Column("id", Integer, primary_key=True),
-            Column("t1_id", Integer, ForeignKey("master.t1.id")),
+            Column("t1_id", Integer, ForeignKey("main.t1.id")),
             schema="alternate",
         )
         t4 = Table(
             "t4",
             metadata,
             Column("id", Integer, primary_key=True),
-            Column("t1_id", Integer, ForeignKey("master.t1.id")),
+            Column("t1_id", Integer, ForeignKey("main.t1.id")),
         )
 
         # schema->schema, generate REFERENCES with no schema name
         self.assert_compile(
             schema.CreateTable(t2),
-            "CREATE TABLE master.t2 ("
+            "CREATE TABLE main.t2 ("
             "id INTEGER NOT NULL, "
             "t1_id INTEGER, "
             "PRIMARY KEY (id), "

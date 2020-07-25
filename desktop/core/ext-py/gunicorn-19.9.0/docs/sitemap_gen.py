@@ -157,7 +157,7 @@ SITEURL_XML_SUFFIX = ' </url>\n'
 #   5 - query attribute that should be set to the new Sitemap URL
 # Clear as mud, I know.
 NOTIFICATION_SITES = [
-  ('http', 'www.google.com', 'webmasters/sitemaps/ping', {}, '', 'sitemap')
+  ('http', 'www.google.com', 'webmains/sitemaps/ping', {}, '', 'sitemap')
   ]
 
 
@@ -1901,7 +1901,7 @@ class Sitemap(xml.sax.handler.ContentHandler):
   #end def FlushSet
 
   def WriteIndex(self):
-    """ Write the master index of all Sitemap files """
+    """ Write the main index of all Sitemap files """
     # Make a filename
     filename = self._filegen.GeneratePath(SITEINDEX_SUFFIX)
     if not filename:

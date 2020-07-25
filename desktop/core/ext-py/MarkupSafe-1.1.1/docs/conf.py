@@ -10,7 +10,7 @@ release, version = get_version("MarkupSafe")
 
 # General --------------------------------------------------------------
 
-master_doc = "index"
+main_doc = "index"
 extensions = ["sphinx.ext.autodoc", "sphinx.ext.intersphinx", "pallets_sphinx_themes"]
 intersphinx_mapping = {"python": ("https://docs.python.org/3/", None)}
 
@@ -38,5 +38,5 @@ html_show_sourcelink = False
 # LaTeX ----------------------------------------------------------------
 
 latex_documents = [
-    (master_doc, "MarkupSafe-{}.tex".format(version), html_title, author, "manual")
+    (main_doc, "MarkupSafe-{}.tex".format(version), html_title, author, "manual")
 ]

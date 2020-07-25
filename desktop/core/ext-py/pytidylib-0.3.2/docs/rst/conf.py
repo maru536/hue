@@ -2,7 +2,7 @@
 
 extensions = ['sphinx.ext.autodoc']
 
-master_doc = "index"
+main_doc = "index"
 
 project = "pytidylib"
 copyright = "2009-2014 Jason Stitt"
