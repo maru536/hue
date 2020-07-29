@@ -934,6 +934,7 @@ ${ components.menubar(is_embeddable) }
                       % if has_write_access:
                         <a href="javascript: void(0);" class="btn btn-default" data-bind="click: showImportData, visible: tableDetails() && !catalogEntry.isView()" title="${_('Import Data')}"><i class="fa fa-upload fa-fw"></i> ${_('Import')}</a>
                       % endif
+                      <a href="javascript: void(0);" class="btn btn-default" data-bind="click: showExportData" title="${_('Export Data')}"><i class="fa fa-download fa-fw"></i> ${_('Export')}</a>
                       % if has_write_access:
                         <a href="#dropSingleTable" data-toggle="modal" class="btn btn-default" data-bind="attr: { 'title' : tableDetails() && catalogEntry.isView() ? '${_('Drop View')}' : '${_('Drop Table')}' }"><i class="fa fa-times fa-fw"></i> ${_('Drop')}</a>
                       % endif
@@ -999,6 +1000,7 @@ ${ components.menubar(is_embeddable) }
     <!-- /ko -->
   <!-- /ko -->
   <div id="import-data-modal" class="modal hide fade" style="display: block;width: 680px;margin-left: -340px!important;"></div>
+  <div id="export-data-modal" class="modal hide fade" style="display: block;width: 680px;margin-left: -340px!important;"></div>
 </div>
 </span>
 

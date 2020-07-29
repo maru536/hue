@@ -49,6 +49,8 @@ from metastore.settings import DJANGO_APPS
 
 from desktop.auth.backend import is_admin
 
+from google.cloud import bigquery
+
 
 LOG = logging.getLogger(__name__)
 SAVE_RESULTS_CTAS_TIMEOUT = 300         # seconds
@@ -492,6 +494,75 @@ def read_table(request, database, table):
   except Exception as e:
     raise PopupException(_('Cannot read table'), detail=e)
 
+def export_table(request, database, table):
+  print("export_table:::", request, database, table)
+  response = {'status': -1, 'data': 'None'}
+
+  source_type = request.POST.get('source_type', request.GET.get('source_type', 'hive'))
+  cluster = json.loads(request.POST.get('cluster', '{}'))
+
+  db = _get_db(user=request.user, source_type=source_type, cluster=cluster)
+
+  if source_type == 'bigquery':
+    table = db.get_table('.'.join([db.project, database, table]))
+  else:
+    table = db.get_table(database, table)
+
+  if request.method == "POST":
+    load_form = LoadDataForm(table, request.POST)
+
+    if load_form.is_valid():
+      on_success_url = reverse('metastore:describe_table', kwargs={'database': database, 'table': table.name})
+      generate_ddl_only = request.POST.get('is_embeddable', 'false') == 'true'
+      try:
+        design = SavedQuery.create_empty(app_name=source_type if source_type != 'hive' else 'beeswax', owner=request.user, data=hql_query('').dumps())
+        form_data = {
+          'path': load_form.cleaned_data['path'],
+          'overwrite': load_form.cleaned_data['overwrite'],
+          'partition_columns': [(column_name, load_form.cleaned_data[key]) for key, column_name in load_form.partition_columns.items()],
+        }
+        query_history = db.load_data(database, table.name, form_data, design, generate_ddl_only=generate_ddl_only)
+        if generate_ddl_only:
+          last_executed = json.loads(request.POST.get('start_time'), '-1')
+          job = make_notebook(
+            name=_('Export data in %s.%s') % (database, table.name),
+            editor_type=source_type,
+            statement=query_history.strip(),
+            status='ready',
+            database=database,
+            on_success_url='assist.db.refresh',
+            is_task=True,
+            last_executed=last_executed
+          )
+          response = job.execute(request)
+        else:
+          url = reverse('beeswax:watch_query_history', kwargs={'query_history_id': query_history.id}) + '?on_success_url=' + on_success_url
+          response['status'] = 0
+          response['data'] = url
+          response['query_history_id'] = query_history.id
+      except QueryError as ex:
+        response['status'] = 1
+        response['data'] = _("Can't Export the data: ") + ex.message
+      except Exception as e:
+        response['status'] = 1
+        response['data'] = _("Can't Export the data: ") + str(e)
+  else:
+    load_form = LoadDataForm(table)
+
+  if response['status'] == -1:
+    popup = render('popups/export_data.mako', request, {
+           'table': table,
+           'load_form': load_form,
+           'source_type': source_type,
+           'database': database,
+           'app_name': 'beeswax'
+       }, force_template=True).content
+    response['data'] = popup
+
+  return JsonResponse(response)
+
+
+
 @check_has_write_access_permission
 def load_table(request, database, table):
   response = {'status': -1, 'data': 'None'}
@@ -501,7 +572,10 @@ def load_table(request, database, table):
 
   db = _get_db(user=request.user, source_type=source_type, cluster=cluster)
 
-  table = db.get_table(database, table)
+  if source_type == 'bigquery':
+    table = db.get_table('.'.join([db.project, database, table]))
+  else:
+    table = db.get_table(database, table)
 
   if request.method == "POST":
     load_form = LoadDataForm(table, request.POST)
@@ -725,6 +799,8 @@ def _get_db(user, source_type=None, cluster=None):
       source_type = 'hive'
     else:
       source_type = cluster_config['default_sql_interpreter']
+  elif source_type == 'bigquery':
+    return bigquery.Client()
 
   name = source_type if source_type != 'hive' else 'beeswax'
 

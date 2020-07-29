@@ -32,6 +32,7 @@ urlpatterns = [
   url(r'^table/(?P<database>\w+)/(?P<table>\w+)/alter$', metastore_views.alter_table, name='alter_table'),
   url(r'^table/(?P<database>\w+)/(?P<table>\w+)/metadata$', metastore_views.get_table_metadata, name='get_table_metadata'),
   url(r'^table/(?P<database>\w+)/(?P<table>\w+)/load$', metastore_views.load_table, name='load_table'),
+  url(r'^table/(?P<database>\w+)/(?P<table>\w+)/export$', metastore_views.export_table, name='export_table'),
   url(r'^table/(?P<database>\w+)/(?P<table>\w+)/read$', metastore_views.read_table, name='read_table'),
   url(r'^table/(?P<database>\w+)/(?P<table>\w+)/queries$', metastore_views.table_queries, name='table_queries'),
   url(r'^table/(?P<database>\w+)/(?P<table>\w+)/partitions/?$', metastore_views.describe_partitions, name='describe_partitions'),

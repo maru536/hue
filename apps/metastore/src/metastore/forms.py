@@ -25,6 +25,8 @@ from filebrowser.forms import PathField
 from beeswax import common
 from beeswax.models import SavedQuery
 
+from google.cloud import bigquery
+
 
 class DbForm(forms.Form):
   """For 'show tables'"""
@@ -53,10 +55,19 @@ class LoadDataForm(forms.Form):
     """
     super(LoadDataForm, self).__init__(*args, **kwargs)
     self.partition_columns = dict()
-    for i, column in enumerate(table_obj.partition_keys):
-      # We give these numeric names because column names
-      # may be unpleasantly arbitrary.
-      name = "partition_%d" % i
-      char_field = forms.CharField(required=True, label=_t("%(column_name)s (partition key with type %(column_type)s)") % {'column_name': column.name, 'column_type': column.type})
-      self.fields[name] = char_field
-      self.partition_columns[name] = column.name
+    if isinstance(table_obj, bigquery.table.Table):
+      partition = table_obj.time_partitioning if table_obj.time_partitioning != None else table_obj.range_partitioning
+      if partition:
+        name = "partition_0"
+        field_name = partition.field if partition.field != None else 'PARTITIONTIME'
+        self.fields[name] = forms.CharField(required=True, label=_t("%(column_name)s (partition key with type %(column_type)s)") % {'column_name': field_name, 'column_type': partition.type_})
+        self.partition_columns[name] = field_name
+
+    else:
+      for i, column in enumerate(table_obj.partition_keys):
+        # We give these numeric names because column names
+        # may be unpleasantly arbitrary.
+        name = "partition_%d" % i
+        char_field = forms.CharField(required=True, label=_t("%(column_name)s (partition key with type %(column_type)s)") % {'column_name': column.name, 'column_type': column.type})
+        self.fields[name] = char_field
+        self.partition_columns[name] = column.name
