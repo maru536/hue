@@ -26,47 +26,28 @@ from django.utils.translation import ugettext as _
       <h2 class="modal-title">${_('Import Data')}</h2>
     </div>
     <div class="modal-body">
-        <input id="load_data_is_embeddable" type="hidden" name="is_embeddable" value="false">
-        <input id="load_data_source_type" type="hidden" name="source_type" value="${ source_type }">
-        <input type="hidden" name="start_time" value=""/>
-
-        <div>
-        Format
+        <div class="format-select-group">
+          <div class='plain'> Format </div>
+          <select name="format" id="format" onchange="set_compression(this)">
+          % for format in formats:
+            <option value="${format}">${format}</option>
+          % endfor
+          </select>
         </div>
 
-        <div class="control-group">
-            ${comps.bootstrapLabel(load_form["path"])}
-            <div class="controls">
-                ${comps.field(load_form["path"], placeholder="/user/user_name/data_dir/file", klass="pathChooser input-xlarge", file_chooser=True, show_errors=True)}
-            </div>
+        <div class="compression-select-group">
+          <div class='plain'> Compression </div>
+          <select name="compression" id="compression">
+          % for compression in compressions['CSV']:
+            <option value="${compression}">${compression}</option>
+          % endfor
+          </select>
         </div>
-
-        <div id="filechooser"></div>
-
-        % for pf in load_form.partition_columns:
-            <div class="control-group">
-                 ${comps.bootstrapLabel(load_form[pf])}
-                 <div class="controls">
-                   ${comps.field(load_form[pf], render_default=True, attrs={'klass': 'input-xxlarge'})}
-                </div>
-            </div>
-        % endfor
-
-        <div class="control-group">
-          <div class="controls">
-            <label class="checkbox inline-block">
-                <input type="checkbox" name="overwrite"/> ${_('Overwrite existing data')}
-              </label>
-            </div>
-        </div>
-
-        <p class="alert alert-warning">${_("Note that loading data will move data from its location into the table's storage location.")}</p>
-        <p id="load-data-error" class="alert alert-error hide"></p>
     </div>
 
     <div class="modal-footer">
         <a href="#" class="btn" data-dismiss="modal">${_('Cancel')}</a>
-        <button class="btn btn-primary" id="load-data-submit-btn" disabled="disabled">${_('Submit')}</button>
+        <button class="btn btn-primary" id="export-data-btn">${_('Export')}</button>
     </div>
 </form>
 
@@ -77,6 +58,15 @@ from django.utils.translation import ugettext as _
      min-height: 100px;
      height: 380px;
      overflow-y: auto;
+     margin-top: 10px;
+   }
+
+   .plain {
+     font-size: 200%,
+     font-weight: bold;
+   }
+
+   .compression-select-group {
      margin-top: 10px;
    }
 
@@ -96,50 +86,8 @@ from django.utils.translation import ugettext as _
 
 <script type="text/javascript">
   $(document).ready(function () {
-    $(".fileChooserBtn").click(function (e) {
-      e.preventDefault();
-      var _destination = $(this).attr("data-filechooser-destination");
-      $("#filechooser").jHueFileChooser({
-        initialPath: $("input[name='" + _destination + "']").val(),
-        onFileChoose: function (filePath) {
-          $("input[name='" + _destination + "']").val(filePath);
-          toggleLoadBtn($("input[name='" + _destination + "']"));
-          $("#filechooser").slideUp();
-        },
-        onFolderChange: function (filePath) {
-          $("input[name='" + _destination + "']").val(filePath);
-        },
-        onFolderChoose: function (filePath) {
-          $("input[name='" + _destination + "']").val(filePath);
-          $("#filechooser").slideUp();
-        },
-        createFolder: false,
-        selectFolder: true,
-        uploadFile: true
-      });
-      $("#filechooser").slideDown();
-    });
-
-    var _keydownTimeout = -1;
-    $("input[name='" + $(".fileChooserBtn").data("filechooser-destination") + "']").on("keydown", function () {
-      window.clearTimeout(_keydownTimeout);
-      var _fld = $(this);
-      window.setTimeout(function () {
-        toggleLoadBtn(_fld);
-      }, 300)
-    });
-
-    function toggleLoadBtn(fld) {
-      $("#load-data-submit-btn").attr("disabled", "disabled");
-      if ($.trim(fld.val()) != "") {
-        $("#load-data-submit-btn").removeAttr("disabled");
-      }
-    }
-
-    $("#load-data-submit-btn").click(function (e) {
-      $("#load_data_is_embeddable").val("true");
-      $("#load-data-form").find('input[name=start_time]').val(ko.mapping.toJSON(new Date().getTime()));
-      $.post("${ url('metastore:load_table', database=database, table=table.name) }",
+    $("#export-data-btn").click(function (e) {
+      $.post("${ url('metastore:export_table', database=database, table=table.name) }",
         $("#load-data-form").serialize(),
         function (response) {
           if (response['status'] != 0) {
@@ -160,4 +108,26 @@ from django.utils.translation import ugettext as _
       });
     });
   });
+
+  function set_compression(selected_format) {
+    var value = selected_format.options[selected_format.selectedIndex].value;
+    var target = document.getElementById("compression");
+
+    csv_compressions = ["NONE", "GZIP"];
+    json_compressions = ["NONE", "GZIP"];
+    compressions = {
+      "CSV": ["NONE", "GZIP"],
+      "JSON": ["NONE", "GZIP"],
+      'AVRO': ["SNAPPY", "DEFLATE"]
+    };
+
+    target.options.length = 0;
+
+    for(var i=0, compression; compression=compressions[value][i]; i++) {
+      var opt = document.createElement("option");
+      opt.value = compression;
+      opt.innerHTML = compression;
+      target.appendChild(opt);
+    }
+  };
 </script>

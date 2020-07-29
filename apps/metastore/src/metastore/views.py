@@ -50,6 +50,7 @@ from metastore.settings import DJANGO_APPS
 from desktop.auth.backend import is_admin
 
 from google.cloud import bigquery
+from google.cloud.bigquery import Compression
 
 
 LOG = logging.getLogger(__name__)
@@ -495,13 +496,16 @@ def read_table(request, database, table):
     raise PopupException(_('Cannot read table'), detail=e)
 
 def export_table(request, database, table):
-  print("export_table:::", request, database, table)
   response = {'status': -1, 'data': 'None'}
 
   source_type = request.POST.get('source_type', request.GET.get('source_type', 'hive'))
   cluster = json.loads(request.POST.get('cluster', '{}'))
 
   db = _get_db(user=request.user, source_type=source_type, cluster=cluster)
+  print("export_table:::", request, database, table, source_type, cluster)
+  dir(request)
+  dir(request.POST)
+  print(request.POST)
 
   if source_type == 'bigquery':
     table = db.get_table('.'.join([db.project, database, table]))
@@ -509,6 +513,7 @@ def export_table(request, database, table):
     table = db.get_table(database, table)
 
   if request.method == "POST":
+    print(':::export_table_post:::')
     load_form = LoadDataForm(table, request.POST)
 
     if load_form.is_valid():
@@ -549,12 +554,19 @@ def export_table(request, database, table):
   else:
     load_form = LoadDataForm(table)
 
+  formats = ['CSV', 'JSON', 'AVRO']
+  for col in table.schema:
+    if col.mode == 'REPEATED' or col.field_type == 'RECORD':
+      formats.remove('CSV')
+      break
+
   if response['status'] == -1:
     popup = render('popups/export_data.mako', request, {
            'table': table,
            'load_form': load_form,
            'source_type': source_type,
            'database': database,
+           'formats': formats,
            'app_name': 'beeswax'
        }, force_template=True).content
     response['data'] = popup
