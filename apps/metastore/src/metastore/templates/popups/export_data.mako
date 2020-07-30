@@ -87,25 +87,18 @@ from django.utils.translation import ugettext as _
 <script type="text/javascript">
   $(document).ready(function () {
     $("#export-data-btn").click(function (e) {
-      $.post("${ url('metastore:export_table', database=database, table=table.name) }",
-        $("#load-data-form").serialize(),
-        function (response) {
-          if (response['status'] != 0) {
-            if (response['status'] == 1) {
-              $('#load-data-error').html(response['data']);
-              $('#load-data-error').show();
-            } else {
-              $('#import-data-modal').html(response['data']);
-            }
-          } else {
-            huePubSub.publish('notebook.task.submitted', response);
-            $("#import-data-modal").modal("hide");
-          }
-        }
-      ).always(function () {
-        $("#load-data-submit-btn").button('reset');
-        $("#load-data-submit-btn").removeAttr("disabled");
-      });
+      var background = document.createElement('a');
+      
+      url = window.location.origin +
+        '/hue/metastore/table/${database}/${table}/download?' +
+        $("#load-data-form").serialize();
+
+      background.href = url;
+      background.download = "${table}.tar";
+
+      document.body.appendChild(background);
+      background.click();
+      document.body.removeChild(background);
     });
   });
 

@@ -28,6 +28,7 @@ from django.shortcuts import redirect
 from django.utils.functional import wraps
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
+from django.http import StreamingHttpResponse, HttpResponse
 
 from desktop.context_processors import get_app_name
 from desktop.lib.django_util import JsonResponse, render
@@ -38,6 +39,7 @@ from beeswax.design import hql_query
 from beeswax.models import SavedQuery
 from beeswax.server import dbms
 from beeswax.server.dbms import get_query_server_config
+from beeswax.data_export import DOWNLOAD_COOKIE_AGE
 from desktop.lib.view_util import location_to_url
 from metadata.conf import has_optimizer, has_catalog, get_optimizer_url, get_catalog_url
 from notebook.connectors.base import Notebook, QueryError
@@ -55,7 +57,11 @@ from google.cloud.bigquery import Compression
 
 LOG = logging.getLogger(__name__)
 SAVE_RESULTS_CTAS_TIMEOUT = 300         # seconds
-
+FORMAT_TO_CONTENT_TYPE = {
+    'csv': 'application/csv',
+    'xls': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'json': 'application/json'
+}
 
 def check_has_write_access_permission(view_func):
   """
@@ -495,64 +501,53 @@ def read_table(request, database, table):
   except Exception as e:
     raise PopupException(_('Cannot read table'), detail=e)
 
+def download_table(request, database, table):
+  content_type = 'application/octet-stream'
+
+  resp = StreamingHttpResponse(open('/home/maru0218_naver_com/hue_dependency.sh', 'rb'), content_type=content_type)
+  try:
+    del resp['Content-Length']
+  except KeyError:
+    pass
+
+  try:
+    name = 'admin'.encode('ascii')
+    format = 'csv'.encode('ascii')
+    resp['Content-Disposition'] = b'attachment; filename="%s.%s"' % (name, format)
+  except UnicodeEncodeError:
+    name = urlquote(name)
+    if user_agent is not None and 'Firefox' in user_agent:
+      # Preserving non-ASCII filename. See RFC https://tools.ietf.org/html/rfc6266#appendix-D, only FF works
+      resp['Content-Disposition'] = 'attachment; filename*="%s.%s"' % (name, format)
+    else:
+      resp['Content-Disposition'] = 'attachment; filename="%s.%s"' % (name, format)
+
+  resp.set_cookie(
+    'download-%s' % name,
+    json.dumps({
+      'truncated': 'false',
+      'row_counter': '0'
+    }),
+    max_age=DOWNLOAD_COOKIE_AGE
+  )
+    
+  return resp
+
+
 def export_table(request, database, table):
   response = {'status': -1, 'data': 'None'}
 
-  source_type = request.POST.get('source_type', request.GET.get('source_type', 'hive'))
+  source_type = request.POST.get('source_type', request.GET.get('source_type', 'bigquery'))
   cluster = json.loads(request.POST.get('cluster', '{}'))
 
   db = _get_db(user=request.user, source_type=source_type, cluster=cluster)
-  print("export_table:::", request, database, table, source_type, cluster)
-  dir(request)
-  dir(request.POST)
-  print(request.POST)
 
   if source_type == 'bigquery':
     table = db.get_table('.'.join([db.project, database, table]))
   else:
     table = db.get_table(database, table)
 
-  if request.method == "POST":
-    print(':::export_table_post:::')
-    load_form = LoadDataForm(table, request.POST)
-
-    if load_form.is_valid():
-      on_success_url = reverse('metastore:describe_table', kwargs={'database': database, 'table': table.name})
-      generate_ddl_only = request.POST.get('is_embeddable', 'false') == 'true'
-      try:
-        design = SavedQuery.create_empty(app_name=source_type if source_type != 'hive' else 'beeswax', owner=request.user, data=hql_query('').dumps())
-        form_data = {
-          'path': load_form.cleaned_data['path'],
-          'overwrite': load_form.cleaned_data['overwrite'],
-          'partition_columns': [(column_name, load_form.cleaned_data[key]) for key, column_name in load_form.partition_columns.items()],
-        }
-        query_history = db.load_data(database, table.name, form_data, design, generate_ddl_only=generate_ddl_only)
-        if generate_ddl_only:
-          last_executed = json.loads(request.POST.get('start_time'), '-1')
-          job = make_notebook(
-            name=_('Export data in %s.%s') % (database, table.name),
-            editor_type=source_type,
-            statement=query_history.strip(),
-            status='ready',
-            database=database,
-            on_success_url='assist.db.refresh',
-            is_task=True,
-            last_executed=last_executed
-          )
-          response = job.execute(request)
-        else:
-          url = reverse('beeswax:watch_query_history', kwargs={'query_history_id': query_history.id}) + '?on_success_url=' + on_success_url
-          response['status'] = 0
-          response['data'] = url
-          response['query_history_id'] = query_history.id
-      except QueryError as ex:
-        response['status'] = 1
-        response['data'] = _("Can't Export the data: ") + ex.message
-      except Exception as e:
-        response['status'] = 1
-        response['data'] = _("Can't Export the data: ") + str(e)
-  else:
-    load_form = LoadDataForm(table)
+  load_form = LoadDataForm(table)
 
   formats = ['CSV', 'JSON', 'AVRO']
   for col in table.schema:
@@ -560,13 +555,21 @@ def export_table(request, database, table):
       formats.remove('CSV')
       break
 
+  compressions = {
+    'CSV': [Compression.NONE, Compression.GZIP],
+    'JSON': [Compression.NONE, Compression.GZIP],
+    'AVRO': [Compression.SNAPPY, Compression.DEFLATE]
+  }
+
   if response['status'] == -1:
     popup = render('popups/export_data.mako', request, {
            'table': table,
            'load_form': load_form,
            'source_type': source_type,
            'database': database,
+           'table': table.name,
            'formats': formats,
+           'compressions': compressions,
            'app_name': 'beeswax'
        }, force_template=True).content
     response['data'] = popup
