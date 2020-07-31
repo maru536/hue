@@ -54,8 +54,8 @@ def merge(inputfile, textdoc):
     for settings in inputtextdoc.settings.childNodes[:]:
         textdoc.settings.addElement(settings)
 
-    for masterstyles in inputtextdoc.masterstyles.childNodes[:]:
-        textdoc.masterstyles.addElement(masterstyles)
+    for mainstyles in inputtextdoc.mainstyles.childNodes[:]:
+        textdoc.mainstyles.addElement(mainstyles)
 
     for body in inputtextdoc.body.childNodes[:]:
         textdoc.body.addElement(body)

@@ -12,7 +12,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx']
 templates_path = []
 source_suffix = '.rst'
 source_encoding = 'utf-8'
-master_doc = 'index'
+main_doc = 'index'
 
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]

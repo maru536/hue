@@ -20,7 +20,7 @@
 import os,sys,getopt,struct
 from cStringIO import StringIO
 from odf.opendocument import OpenDocumentPresentation
-from odf.style import Style, MasterPage, PageLayout, PageLayoutProperties, \
+from odf.style import Style, MainPage, PageLayout, PageLayoutProperties, \
 TextProperties, GraphicProperties, ParagraphProperties, DrawingPageProperties
 from odf.text import P
 from odf.draw  import Page, Frame, TextBox, Image
@@ -110,14 +110,14 @@ if __name__ == "__main__":
 
     # Style for the title frame of the page
     # We set a centered 34pt font with yellowish background
-    titlestyle = Style(name="MyMaster-title", family="presentation")
+    titlestyle = Style(name="MyMain-title", family="presentation")
     titlestyle.addElement(ParagraphProperties(textalign="center"))
     titlestyle.addElement(TextProperties(fontsize="34pt"))
     titlestyle.addElement(GraphicProperties(fillcolor="#ffff99"))
     doc.styles.addElement(titlestyle)
 
     # Style for the photo frame
-    photostyle = Style(name="MyMaster-photo", family="presentation")
+    photostyle = Style(name="MyMain-photo", family="presentation")
     doc.styles.addElement(photostyle)
 
     # Create automatic transition
@@ -126,9 +126,9 @@ if __name__ == "__main__":
        transitionstyle="move-from-top", duration="PT5S"))
     doc.automaticstyles.addElement(dpstyle)
 
-    # Every drawing page must have a master page assigned to it.
-    masterpage = MasterPage(name="MyMaster", pagelayoutname=pagelayout)
-    doc.masterstyles.addElement(masterpage)
+    # Every drawing page must have a main page assigned to it.
+    mainpage = MainPage(name="MyMain", pagelayoutname=pagelayout)
+    doc.mainstyles.addElement(mainpage)
 
     if len(args) == 0:
         pict_dir = "."
@@ -150,7 +150,7 @@ if __name__ == "__main__":
            w = float(w) * 540.0 / float(h)
            h = 540.0
 
-        page = Page(stylename=dpstyle, masterpagename=masterpage)
+        page = Page(stylename=dpstyle, mainpagename=mainpage)
         doc.presentation.addElement(page)
         titleframe = Frame(stylename=titlestyle, width="720pt", height="56pt", x="40pt", y="10pt")
         page.addElement(titleframe)

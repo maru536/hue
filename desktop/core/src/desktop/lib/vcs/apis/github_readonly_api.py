@@ -97,7 +97,7 @@ class GithubReadOnlyApi(Api):
     """
     Given a base URL to a Github repository, return a tuple of the owner, repo, branch
     :param url: base URL to repo (e.g. - https://github.com/cloudera/hue/tree/master)
-    :return: tuple of strings (e.g. - ('cloudera', 'hue', 'master'))
+    :return: tuple of strings (e.g. - ('cloudera', 'hue', 'main'))
     """
     match = self.github_url_regex.search(url)
     if match:

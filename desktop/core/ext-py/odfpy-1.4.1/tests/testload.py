@@ -518,7 +518,7 @@ class TestExampleDocs(unittest.TestCase):
         self.assertTrue(e.has_value("table:style-name","Tabel1.A"))
 
     def test_headerfooter(self):
-        """ Test that styles referenced from master pages are renamed in OOo 2.x documents """
+        """ Test that styles referenced from main pages are renamed in OOo 2.x documents """
         simplelist_odt = os.path.join(
             os.path.dirname(__file__), "examples", "headerfooter.odt")
         d = load(simplelist_odt)

@@ -224,7 +224,7 @@ SPARK_KAFKA_VERSION=0.10 spark2-submit envelope.jar envelope.conf"""
           }
           output {
               type = kudu
-              connection = "%(kudu_master)s"
+              connection = "%(kudu_main)s"
               table.name = "%(output_table)s"
           }""" % properties
       else:

@@ -50,8 +50,8 @@ templates_path = ['_templates']
 # source_suffix = ['.rst', '.md']
 source_suffix = '.rst'
 
-# The master toctree document.
-master_doc = 'index'
+# The main toctree document.
+main_doc = 'index'
 
 # General information about the project.
 project = u'josepy'
@@ -154,7 +154,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'josepy.tex', u'josepy Documentation',
+    (main_doc, 'josepy.tex', u'josepy Documentation',
      u"Let's Encrypt Project", 'manual'),
 ]
 
@@ -164,7 +164,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'josepy', u'josepy Documentation',
+    (main_doc, 'josepy', u'josepy Documentation',
      [author], 1),
     ('man/jws', 'jws', u'jws script documentation', [project], 1),
 ]
@@ -176,7 +176,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'josepy', u'josepy Documentation',
+    (main_doc, 'josepy', u'josepy Documentation',
      author, 'josepy', 'One line description of project.',
      'Miscellaneous'),
 ]

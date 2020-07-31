@@ -6,7 +6,7 @@
 
 """
 unicode2subfiles.py -- produce character entity files (reSructuredText
-substitutions) from the W3C master unicode.xml file.
+substitutions) from the W3C main unicode.xml file.
 
 This program extracts character entity and entity set information from a
 unicode.xml file and produces multiple reStructuredText files (in the current

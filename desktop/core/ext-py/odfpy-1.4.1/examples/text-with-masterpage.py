@@ -19,14 +19,14 @@
 #
 
 from odf.opendocument import OpenDocumentText
-from odf.style import PageLayout, MasterPage, Header, Footer
+from odf.style import PageLayout, MainPage, Header, Footer
 from odf.text import P
 
 textdoc = OpenDocumentText()
 pl = PageLayout(name="pagelayout")
 textdoc.automaticstyles.addElement(pl)
-mp = MasterPage(name="Standard", pagelayoutname=pl)
-textdoc.masterstyles.addElement(mp)
+mp = MainPage(name="Standard", pagelayoutname=pl)
+textdoc.mainstyles.addElement(mp)
 h = Header()
 hp = P(text="header try")
 h.addElement(hp)

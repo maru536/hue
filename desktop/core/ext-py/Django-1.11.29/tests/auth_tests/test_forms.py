@@ -778,7 +778,7 @@ class PasswordResetFormTest(TestDataMixin, TestCase):
                     "Sorry to hear you forgot your password.",
                     None, [to_email],
                     ['site_monitor@example.com'],
-                    headers={'Reply-To': 'webmaster@example.com'},
+                    headers={'Reply-To': 'webmain@example.com'},
                     alternatives=[
                         ("Really sorry to hear you forgot your password.", "text/html")
                     ],

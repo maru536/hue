@@ -65,19 +65,19 @@ rel_keys = {
 when = 1290250287
 
 abs_soa = dns.rrset.from_text('dnspython.org.', 3600, 'IN', 'SOA',
-                              'howl.dnspython.org. hostmaster.dnspython.org. 2010020047 3600 1800 604800 3600')
+                              'howl.dnspython.org. hostmain.dnspython.org. 2010020047 3600 1800 604800 3600')
 
 abs_other_soa = dns.rrset.from_text('dnspython.org.', 3600, 'IN', 'SOA',
-                                    'foo.dnspython.org. hostmaster.dnspython.org. 2010020047 3600 1800 604800 3600')
+                                    'foo.dnspython.org. hostmain.dnspython.org. 2010020047 3600 1800 604800 3600')
 
 abs_soa_rrsig = dns.rrset.from_text('dnspython.org.', 3600, 'IN', 'RRSIG',
                                     'SOA 5 2 3600 20101127004331 20101119213831 61695 dnspython.org. sDUlltRlFTQw5ITFxOXW3TgmrHeMeNpdqcZ4EXxM9FHhIlte6V9YCnDw t6dvM9jAXdIEi03l9H/RAd9xNNW6gvGMHsBGzpvvqFQxIBR2PoiZA1mX /SWHZFdbt4xjYTtXqpyYvrMK0Dt7bUYPadyhPFCJ1B+I8Zi7B5WJEOd0 8vs=')
 
 rel_soa = dns.rrset.from_text('@', 3600, 'IN', 'SOA',
-                              'howl hostmaster 2010020047 3600 1800 604800 3600')
+                              'howl hostmain 2010020047 3600 1800 604800 3600')
 
 rel_other_soa = dns.rrset.from_text('@', 3600, 'IN', 'SOA',
-                                    'foo hostmaster 2010020047 3600 1800 604800 3600')
+                                    'foo hostmain 2010020047 3600 1800 604800 3600')
 
 rel_soa_rrsig = dns.rrset.from_text('@', 3600, 'IN', 'RRSIG',
                                     'SOA 5 2 3600 20101127004331 20101119213831 61695 @ sDUlltRlFTQw5ITFxOXW3TgmrHeMeNpdqcZ4EXxM9FHhIlte6V9YCnDw t6dvM9jAXdIEi03l9H/RAd9xNNW6gvGMHsBGzpvvqFQxIBR2PoiZA1mX /SWHZFdbt4xjYTtXqpyYvrMK0Dt7bUYPadyhPFCJ1B+I8Zi7B5WJEOd0 8vs=')
@@ -101,10 +101,10 @@ abs_dsa_keys = {
 }
 
 abs_dsa_soa = dns.rrset.from_text('example.', 86400, 'IN', 'SOA',
-                                  'ns1.example. hostmaster.example. 2 10800 3600 604800 86400')
+                                  'ns1.example. hostmain.example. 2 10800 3600 604800 86400')
 
 abs_other_dsa_soa = dns.rrset.from_text('example.', 86400, 'IN', 'SOA',
-                                        'ns1.example. hostmaster.example. 2 10800 3600 604800 86401')
+                                        'ns1.example. hostmain.example. 2 10800 3600 604800 86401')
 
 abs_dsa_soa_rrsig = dns.rrset.from_text('example.', 86400, 'IN', 'RRSIG',
                                         'SOA 3 1 86400 20101129143231 20101122112731 42088 example. CGul9SuBofsktunV8cJs4eRs6u+3NCS3yaPKvBbD+pB2C76OUXDZq9U=')
@@ -129,10 +129,10 @@ abs_ecdsa256_keys = {
 }
 
 abs_ecdsa256_soa = dns.rrset.from_text('example.', 86400, 'IN', 'SOA',
-                                       'ns1.example. hostmaster.example. 4 10800 3600 604800 86400')
+                                       'ns1.example. hostmain.example. 4 10800 3600 604800 86400')
 
 abs_other_ecdsa256_soa = dns.rrset.from_text('example.', 86400, 'IN', 'SOA',
-                                             'ns1.example. hostmaster.example. 2 10800 3600 604800 86401')
+                                             'ns1.example. hostmain.example. 2 10800 3600 604800 86401')
 
 abs_ecdsa256_soa_rrsig = dns.rrset.from_text('example.', 86400, 'IN', 'RRSIG',
                                              "SOA 13 1 86400 20130921221753 20130921221638 7460 example. Sm09SOGz1ULB5D/duwdE2Zpn8bWbVBM77H6N1wPkc42LevvVO+kZEjpq 2nq4GOMJcih52667GIAbMrwmU5P2MQ==")
@@ -148,10 +148,10 @@ abs_ecdsa384_keys = {
 }
 
 abs_ecdsa384_soa = dns.rrset.from_text('example.', 86400, 'IN', 'SOA',
-                                       'ns1.example. hostmaster.example. 2 10800 3600 604800 86400')
+                                       'ns1.example. hostmain.example. 2 10800 3600 604800 86400')
 
 abs_other_ecdsa384_soa = dns.rrset.from_text('example.', 86400, 'IN', 'SOA',
-                                             'ns1.example. hostmaster.example. 2 10800 3600 604800 86401')
+                                             'ns1.example. hostmain.example. 2 10800 3600 604800 86401')
 
 abs_ecdsa384_soa_rrsig = dns.rrset.from_text('example.', 86400, 'IN', 'RRSIG',
                                              "SOA 14 1 86400 20130929021229 20130921230729 63571 example. CrnCu34EeeRz0fEhL9PLlwjpBKGYW8QjBjFQTwd+ViVLRAS8tNkcDwQE NhSV89NEjj7ze1a/JcCfcJ+/mZgnvH4NHLNg3Tf6KuLZsgs2I4kKQXEk 37oIHravPEOlGYNI")

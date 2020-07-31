@@ -2107,9 +2107,9 @@ class DistCpAction(Action):
 class SparkAction(Action):
   TYPE = 'spark'
   FIELDS = {
-     'spark_master': {
-          'name': 'spark_master',
-          'label': _('Spark Master'),
+     'spark_main': {
+          'name': 'spark_main',
+          'label': _('Spark Main'),
           'value': 'yarn',
           'help_text': _('Ex: spark://host:port, mesos://host:port, yarn, or local.'),
           'type': ''
@@ -2530,9 +2530,9 @@ class SparkDocumentAction(Action):
         'help_text': _('Select a saved Spark program you want to schedule.'),
         'type': 'spark'
      },
-     'spark_master': {
-          'name': 'spark_master',
-          'label': _('Spark Master'),
+     'spark_main': {
+          'name': 'spark_main',
+          'label': _('Spark Main'),
           'value': 'yarn',
           'help_text': _('Ex: spark://host:port, mesos://host:port, yarn, or local.'),
           'type': ''
@@ -4021,7 +4021,7 @@ class WorkflowBuilder(object):
             u'archives': [],
             u'prepares': [],
             u'credentials': credentials,
-            u'spark_master': u'yarn',
+            u'spark_main': u'yarn',
             u'mode': u'client',
             u'app_name': u'BatchSpark2'
         },

@@ -975,7 +975,7 @@ class OverrideSettingsTests(SimpleTestCase):
 
     def test_override_database_routers(self):
         """
-        Overriding DATABASE_ROUTERS should update the master router.
+        Overriding DATABASE_ROUTERS should update the main router.
         """
         test_routers = (object(),)
         with self.settings(DATABASE_ROUTERS=test_routers):

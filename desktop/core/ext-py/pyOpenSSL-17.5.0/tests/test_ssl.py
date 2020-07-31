@@ -2089,7 +2089,7 @@ class TestConnection(object):
     """
     # XXX get_peer_certificate -> None
     # XXX sock_shutdown
-    # XXX master_key -> TypeError
+    # XXX main_key -> TypeError
     # XXX server_random -> TypeError
     # XXX connect -> TypeError
     # XXX connect_ex -> TypeError
@@ -2513,10 +2513,10 @@ class TestConnection(object):
         # This is a proxy: in general, we have no access to any unique
         # identifier for the session (new enough versions of OpenSSL expose
         # a hash which could be usable, but "new enough" is very, very new).
-        # Instead, exploit the fact that the master key is re-used if the
-        # session is re-used.  As long as the master key for the two
+        # Instead, exploit the fact that the main key is re-used if the
+        # session is re-used.  As long as the main key for the two
         # connections is the same, the session was re-used!
-        assert originalServer.master_key() == resumedServer.master_key()
+        assert originalServer.main_key() == resumedServer.main_key()
 
     def test_set_session_wrong_method(self):
         """
@@ -3361,7 +3361,7 @@ class TestMemoryBIO(object):
         client_conn = self._client(None)
 
         # There should be no key or nonces yet.
-        assert server_conn.master_key() is None
+        assert server_conn.main_key() is None
         assert server_conn.client_random() is None
         assert server_conn.server_random() is None
 
@@ -3371,7 +3371,7 @@ class TestMemoryBIO(object):
         assert interact_in_memory(client_conn, server_conn) is None
 
         # Now that the handshake is done, there should be a key and nonces.
-        assert server_conn.master_key() is not None
+        assert server_conn.main_key() is not None
         assert server_conn.client_random() is not None
         assert server_conn.server_random() is not None
         assert server_conn.client_random() == client_conn.client_random()

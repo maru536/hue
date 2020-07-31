@@ -88,7 +88,7 @@ class SQLiteClient(BaseRDMSClient):
   def get_tables(self, database, table_names=[]):
     # Doesn't use database and only retrieves tables for database currently in use.
     cursor = self.connection.cursor()
-    query = "SELECT name FROM sqlite_master WHERE type='table'"
+    query = "SELECT name FROM sqlite_main WHERE type='table'"
     if table_names:
       clause = ' OR '.join(["tablename LIKE '%%%(table)s%%'" % {'table': table} for table in table_names])
       query += ' AND (%s)' % clause

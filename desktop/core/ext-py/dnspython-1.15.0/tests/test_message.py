@@ -49,7 +49,7 @@ flags QR AA RD
 ;QUESTION
 dnspython.org. IN SOA
 ;ANSWER
-dnspython.org. 3600 IN SOA woof.dnspython.org. hostmaster.dnspython.org. 2003052700 3600 1800 604800 3600
+dnspython.org. 3600 IN SOA woof.dnspython.org. hostmain.dnspython.org. 2003052700 3600 1800 604800 3600
 ;AUTHORITY
 dnspython.org. 3600 IN NS ns1.staff.nominum.org.
 dnspython.org. 3600 IN NS ns2.staff.nominum.org.

@@ -1334,19 +1334,19 @@ class test_RedisSentinel:
             connection = Connection(
                 'sentinel://localhost:65534/',
                 transport_options={
-                    'master_name': 'not_important',
+                    'main_name': 'not_important',
                 },
             )
 
             connection.channel()
             p.assert_called()
 
-    def test_getting_master_from_sentinel(self):
+    def test_getting_main_from_sentinel(self):
         with patch('redis.sentinel.Sentinel') as patched:
             connection = Connection(
                 'sentinel://localhost:65534/;sentinel://localhost:65535/;sentinel://localhost:65536/;',  # noqa: E501
                 transport_options={
-                    'master_name': 'not_important',
+                    'main_name': 'not_important',
                 },
             )
 
@@ -1362,10 +1362,10 @@ class test_RedisSentinel:
                 socket_connect_timeout=None, socket_keepalive=None,
                 socket_keepalive_options=None, socket_timeout=None)
 
-            master_for = patched.return_value.master_for
-            master_for.assert_called()
-            master_for.assert_called_with('not_important', ANY)
-            master_for().connection_pool.get_connection.assert_called()
+            main_for = patched.return_value.main_for
+            main_for.assert_called()
+            main_for.assert_called_with('not_important', ANY)
+            main_for().connection_pool.get_connection.assert_called()
 
     def test_can_create_connection(self):
         from redis.exceptions import ConnectionError
@@ -1373,7 +1373,7 @@ class test_RedisSentinel:
         connection = Connection(
             'sentinel://localhost:65534/',
             transport_options={
-                'master_name': 'not_important',
+                'main_name': 'not_important',
             },
         )
         with pytest.raises(ConnectionError):

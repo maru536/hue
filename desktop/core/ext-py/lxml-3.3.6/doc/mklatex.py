@@ -73,10 +73,10 @@ EPYDOC_IMPORT = r"""
 \input{_part_epydoc.tex}
 """
 
-def write_chapter(master, title, filename):
+def write_chapter(main, title, filename):
     filename = os.path.join(os.path.dirname(filename),
                             "_part_%s" % os.path.basename(filename))
-    master.write(r"""
+    main.write(r"""
 \chapter{%s}
 \label{%s}
 \input{%s}
@@ -288,16 +288,16 @@ def publish(dirname, lxml_path, release):
     tex_postprocess(chgpath, os.path.join(dirname, "_part_%s" % chgname),
                     process_line=fix_changelog)
 
-    # Writing a master file
+    # Writing a main file
     print "Building %s\n" % TARGET_FILE
-    master = file( os.path.join(dirname, TARGET_FILE), "w")
+    main = file( os.path.join(dirname, TARGET_FILE), "w")
     for hln in header:
         if hln.startswith(r"\documentclass"):
             #hln = hln.replace('article', 'book')
             hln = DOCUMENT_CLASS + EPYDOC_IMPORT
         elif hln.startswith(r"\begin{document}"):
             # pygments and epydoc support
-            master.write(PYGMENTS_IMPORT)
+            main.write(PYGMENTS_IMPORT)
         elif hln.startswith(r"\title{"):
             hln = replace_content(
                 r'{%s\\\\\\vspace{1cm}\\includegraphics[width=2.5cm]{../html/tagpython-big.png}}' % book_title, hln)
@@ -307,13 +307,13 @@ def publish(dirname, lxml_path, release):
         elif hln.startswith("pdftitle"):
             hln = replace_content(
                 r'{%s}' % book_title, hln)
-        master.write(hln + '\n')
+        main.write(hln + '\n')
 
-    master.write("\\setcounter{page}{2}\n")
-    master.write("\\tableofcontents\n")
+    main.write("\\setcounter{page}{2}\n")
+    main.write("\\tableofcontents\n")
 
     for section, text_files in SITE_STRUCTURE:
-        master.write("\n\n\\part{%s}\n" % section)
+        main.write("\n\n\\part{%s}\n" % section)
         for filename in text_files:
             if filename.startswith('@'):
                 continue
@@ -325,16 +325,16 @@ def publish(dirname, lxml_path, release):
                 basename = os.path.splitext(os.path.basename(filename))[0]
                 basename = BASENAME_MAP.get(basename, basename)
                 outname = basename + '.tex'
-            write_chapter(master, titles[outname], outname)
+            write_chapter(main, titles[outname], outname)
 
-    master.write("\\appendix\n")
-    master.write("\\begin{appendix}\n")
+    main.write("\\appendix\n")
+    main.write("\\begin{appendix}\n")
 
-    write_chapter(master, "Changes", chgname)
-    write_chapter(master, "Generated API documentation", apidocsname)
+    write_chapter(main, "Changes", chgname)
+    write_chapter(main, "Generated API documentation", apidocsname)
 
-    master.write("\\end{appendix}\n")
-    master.write("\\end{document}\n")
+    main.write("\\end{appendix}\n")
+    main.write("\\end{document}\n")
                 
 if __name__ == '__main__':
     publish(sys.argv[1], sys.argv[2], sys.argv[3])
