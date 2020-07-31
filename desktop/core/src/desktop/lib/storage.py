@@ -12,36 +12,40 @@ class Storage(object):
     def __init__(self):
         self.client = gcs.Client()
 
-    def download(self, table):
+    def download(self, gcs_dir):
         bucket = self.client.bucket(TEMP_BUCKET)
-        blobs = list(self.client.list_blobs(bucket, prefix=table+'/'))
-        # compose_blob = bucket.blob('{}/{}'.format(table, 'compose.gzip'))
-        # compose_blob.compose(blobs)
+        blobs = list(bucket.list_blobs(prefix=gcs_dir))
 
-        temp_dir = '{}/{}/'.format(TEMP_DIR, table)
-        try:
-            if not(os.path.isdir(temp_dir)):
-                os.mkdir(temp_dir)
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                print("Failed to create directory!!!!!")
-                raise
+        temp_dir = '{}/{}'.format(TEMP_DIR, gcs_dir)
+        if not(os.path.isdir(temp_dir)):
+            os.mkdir(temp_dir)
 
+        start = time.time()
         zip_file = NamedTemporaryFile(suffix='.tar', dir=temp_dir)
         with tarfile.open(fileobj=zip_file, mode='w') as zip_file:
             for blob in blobs:
-                temp_file = NamedTemporaryFile(
-                    prefix=blob.name.split('/')[-1]+'-', 
-                    dir=temp_dir)
+                file_name = blob.name.split('/')[-1]
+                dot_idx = file_name.find('.')
+                
+                if dot_idx >= 0:
+                    temp_file = NamedTemporaryFile(
+                        prefix=file_name[:dot_idx]+'-', 
+                        suffix=file_name[dot_idx:],
+                        dir=temp_dir)
+                else:
+                    temp_file = NamedTemporaryFile(
+                        prefix=file_name,
+                        dir=temp_dir
+                    )
 
                 self.client.download_blob_to_file(blob, temp_file)
+                temp_file.file.flush()
                 zip_file.add(temp_file.name)
 
         return zip_file
 
-    def delete(self, table):
-        print(':::delete:::')
+    def delete(self, gcs_dir):
         bucket = self.client.bucket(TEMP_BUCKET)
-        blobs = list(bucket.list_blobs(prefix=table+'/'))
+        blobs = list(bucket.list_blobs(prefix=gcs_dir))
         bucket.delete_blobs(blobs)
         

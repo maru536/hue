@@ -171,6 +171,7 @@ dynamic_patterns += [
   url(r'^desktop/api2/user_preferences(?:/(?P<key>\w+))?/?$', desktop_api2.user_preferences, name="desktop.api2.user_preferences"),
 
   url(r'^desktop/api2/doc/export/?$', desktop_api2.export_documents),
+  url(r'^desktop/api2/(?P<database>\w+)/(?P<table>\w+)/download/?$', desktop_api2.download_table, name='download_table'),
   url(r'^desktop/api2/doc/import/?$', desktop_api2.import_documents),
 
   url(r'^desktop/api2/gist/create/?$', desktop_api2.gist_create),

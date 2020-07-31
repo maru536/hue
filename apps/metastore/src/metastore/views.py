@@ -501,39 +501,6 @@ def read_table(request, database, table):
   except Exception as e:
     raise PopupException(_('Cannot read table'), detail=e)
 
-def download_table(request, database, table):
-  content_type = 'application/octet-stream'
-
-  resp = StreamingHttpResponse(open('/home/maru0218_naver_com/hue_dependency.sh', 'rb'), content_type=content_type)
-  try:
-    del resp['Content-Length']
-  except KeyError:
-    pass
-
-  try:
-    name = 'admin'.encode('ascii')
-    format = 'csv'.encode('ascii')
-    resp['Content-Disposition'] = b'attachment; filename="%s.%s"' % (name, format)
-  except UnicodeEncodeError:
-    name = urlquote(name)
-    if user_agent is not None and 'Firefox' in user_agent:
-      # Preserving non-ASCII filename. See RFC https://tools.ietf.org/html/rfc6266#appendix-D, only FF works
-      resp['Content-Disposition'] = 'attachment; filename*="%s.%s"' % (name, format)
-    else:
-      resp['Content-Disposition'] = 'attachment; filename="%s.%s"' % (name, format)
-
-  resp.set_cookie(
-    'download-%s' % name,
-    json.dumps({
-      'truncated': 'false',
-      'row_counter': '0'
-    }),
-    max_age=DOWNLOAD_COOKIE_AGE
-  )
-    
-  return resp
-
-
 def export_table(request, database, table):
   response = {'status': -1, 'data': 'None'}
 
@@ -549,30 +516,30 @@ def export_table(request, database, table):
 
   load_form = LoadDataForm(table)
 
-  formats = ['CSV', 'JSON', 'AVRO']
+  formats = ['csv', 'json', 'avro']
   for col in table.schema:
     if col.mode == 'REPEATED' or col.field_type == 'RECORD':
-      formats.remove('CSV')
+      formats.remove('cav')
       break
 
   compressions = {
-    'CSV': [Compression.NONE, Compression.GZIP],
-    'JSON': [Compression.NONE, Compression.GZIP],
-    'AVRO': [Compression.SNAPPY, Compression.DEFLATE]
+    'csv': [Compression.NONE, Compression.GZIP],
+    'json': [Compression.NONE, Compression.GZIP],
+    'avro': [Compression.SNAPPY, Compression.DEFLATE]
   }
 
-  if response['status'] == -1:
-    popup = render('popups/export_data.mako', request, {
-           'table': table,
-           'load_form': load_form,
-           'source_type': source_type,
-           'database': database,
-           'table': table.name,
-           'formats': formats,
-           'compressions': compressions,
-           'app_name': 'beeswax'
-       }, force_template=True).content
-    response['data'] = popup
+  popup = render('popups/export_data.mako', request, {
+         'table': table,
+         'load_form': load_form,
+         'table': table.name,
+         'formats': formats,
+         'compressions': compressions,
+         'source_type': source_type,
+         'database': database,
+         'app_name': 'beeswax'
+     }, force_template=True).content
+  response['data'] = popup
+    
 
   return JsonResponse(response)
 

@@ -52,6 +52,7 @@ from desktop.lib.exceptions_renderable import PopupException
 from desktop.lib.export_csvxls import make_response
 from desktop.lib.i18n import smart_str, force_unicode
 from desktop.lib.paths import get_desktop_root
+from desktop.lib import export_table
 from desktop.models import Document2, Document, Directory, FilesystemException, uuid_default, \
   UserPreferences, get_user_preferences, set_user_preferences, get_cluster_config, __paginate, _get_gist_document
 from desktop.views import serve_403_error
@@ -93,6 +94,12 @@ def get_config(request):
 
   return JsonResponse(config)
 
+def download_table(request, database, table):
+  user_agent = request.META.get('HTTP_USER_AGENT')
+  format = request.GET.get('format', 'csv')
+  compression = request.GET.get('compression', 'NONE')
+  
+  return export_table.make_response(database, table, str(request.user), format, compression, table+'.tar', user_agent=user_agent)
 
 @api_error_handler
 def get_hue_config(request):
