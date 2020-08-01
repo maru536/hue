@@ -94,6 +94,7 @@ def get_config(request):
 
   return JsonResponse(config)
 
+@api_error_handler
 def download_table(request, database, table):
   user_agent = request.META.get('HTTP_USER_AGENT')
   format = request.GET.get('format', 'csv')

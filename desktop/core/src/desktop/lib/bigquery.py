@@ -65,12 +65,19 @@ class BigQuery(object):
         gcs_dir = '{}_{}/'.format(self.user_id.replace('.', '_'), str(time.time()).replace('.', ''))
         read_file = None
         try:
+            extract_start = time.time()
             self.extract_table(table_id, gcs_dir, format, compression)
-            temp_file = gcs.download(gcs_dir)
-            read_file = TempFile(temp_file.name, 'rb')
-            temp_file.close()
+            print('extract table done:::', time.time()-extract_start)
+            download_start = time.time()
+            merge_file = gcs.download(gcs_dir)
+            print('download_table_done:::', time.time()-download_start)
+            read_file = TempFile(merge_file.name, 'rb')
+            read_file.set_start()
+            merge_file.close()
         finally:
+            delete_start = time.time()
             gcs.delete(gcs_dir)
+            print('delete_done:::', time.time()-delete_start)
 
         return read_file
         
