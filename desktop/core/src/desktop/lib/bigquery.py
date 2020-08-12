@@ -19,6 +19,14 @@ FILE_EXTENSION_TO_FORMAT = {
     'avro': bq.DestinationFormat.AVRO
 }
 
+FORMAT_TO_BQ_SOURCE_FORMAT = {
+    'csv': bq.SourceFormat.CSV,
+    'json': bq.SourceFormat.NEWLINE_DELIMITED_JSON,
+    'avro': bq.SourceFormat.AVRO,
+    'parquet': bq.SourceFormat.PARQUET,
+    'orc': bq.SourceFormat.ORC
+}
+
 class BigQuery(object):
     def __init__(self, user_id):
         self.client = bq.Client()
@@ -80,4 +88,51 @@ class BigQuery(object):
             print('delete_done:::', time.time()-delete_start)
 
         return read_file
+        
+    def create_table(self, table_id, table_options):
+        table = bq.Table(table_id, table_options['schema'])
+        if table_options['type'] == 'INTEGER':
+            table.range_partitioning = bq.RangePartitioning(
+                field=table_options['field'],
+                range_=bq.PartitionRange(start=options['start'], end=options['end'], interval=options['interval'])
+            )
+        elif table_options['type'] == 'TIMESTAMP':
+            table.time_partitioning = bq.TimePartitioning(
+                field=table_options['field'],
+                type_=table_options['by']
+            )
+        elif table_options['type'] == 'DATE':
+            table.time_partitioning = bq.TimePartitioning(
+                field=table_options['field']
+            )
+
+        table = self.client.create_table(table)
+
+    def load_table_from_file(self, files, table, load_options):
+        if load_options['format'] == 'csv':
+            load_job_config = bq.LoadJobConfig(
+                source_format=load_options['format'], 
+                skip_leading_rows=1 if load_options['skip_first_row'] else 0, 
+                schema=load_options['schema'],
+                clustering_fields=load_options['clustering']
+            )
+        elif load_options['format'] == 'json':
+            load_job_config = bq.LoadJobConfig(
+                source_format=load_options['format'],
+                schema=load_options['schema'],
+                clustering_fields=load_options['clustering']
+            )
+        else:
+            load_job_config = bq.LoadJobConfig(
+                source_format=load_options['format'],
+                clustering_fields=load_options['clustering']
+            )
+
+        for load_file in files:
+            job.client.load_table_from_file(load_file, table, job_config=load_job_config)
+            job.result()
+
+
+
+
         
